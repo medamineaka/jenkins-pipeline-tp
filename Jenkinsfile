@@ -6,11 +6,14 @@ pipeline {
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
                     sh """
                         docker run --rm \
-                        -e SONAR_HOST_URL=http://172.17.0.1:9000 \
-                        -e SONAR_TOKEN=${SONAR_TOKEN} \
+                        --network host \
+                        -v \${WORKSPACE}:/usr/src \
+                        -e SONAR_HOST_URL=http://localhost:9000 \
+                        -e SONAR_TOKEN=\${SONAR_TOKEN} \
                         sonarsource/sonar-scanner-cli \
                         -Dsonar.projectKey=jenkins-tp \
-                        -Dsonar.projectName=jenkins-tp
+                        -Dsonar.projectName=jenkins-tp \
+                        -Dsonar.sources=/usr/src
                     """
                 }
             }
